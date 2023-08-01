@@ -29,7 +29,7 @@ public class TestUserUpdateUpdateUser extends FunctionsUserApi {
     private UserUpdateResponseModel responseUpdate;
     FunctionsUserApi userCreate = new FunctionsUserApi();
 
-    private TestUserUpdateUpdateUser(String name, String email, String password, String updName, String updEmail) {
+    public TestUserUpdateUpdateUser(String name, String email, String password, String updName, String updEmail) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -46,7 +46,7 @@ public class TestUserUpdateUpdateUser extends FunctionsUserApi {
 
     private void getUserCreate(){
         Response response = userCreate.getUserCreate(name, email, password);
-        responseCreate = deserialize(response.getBody().asString(), UserResponseModel.class);
+        responseCreate = fromJsonString(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,200);
     }
 
@@ -60,7 +60,7 @@ public class TestUserUpdateUpdateUser extends FunctionsUserApi {
     @DisplayName("Обновление пользователя - проверка обновления поля [name]")
     public void userUpdateCheckName() {
         Response response = getUserUpdate(updName, email, responseCreate.getAccessToken());
-        responseUpdate = deserialize(response.getBody().asString(), UserUpdateResponseModel.class);
+        responseUpdate = fromJsonString(response.getBody().asString(), UserUpdateResponseModel.class);
         checkStatusCode(response,200);
         Assert.assertEquals(updName, responseUpdate.user.name);
     }
@@ -69,7 +69,7 @@ public class TestUserUpdateUpdateUser extends FunctionsUserApi {
     @DisplayName("Обновление пользователя - проверка обновления поля [email]")
     public void userUpdateCheckEmail() {
         Response response = getUserUpdate(name, updEmail, responseCreate.getAccessToken());
-        responseUpdate = deserialize(response.getBody().asString(), UserUpdateResponseModel.class);
+        responseUpdate = fromJsonString(response.getBody().asString(), UserUpdateResponseModel.class);
         checkStatusCode(response,200);
         Assert.assertEquals(updEmail.toLowerCase(), responseUpdate.user.email.toLowerCase());
     }
@@ -78,7 +78,7 @@ public class TestUserUpdateUpdateUser extends FunctionsUserApi {
     @DisplayName("Обновление пользователя - проверка обновления поля [email]")
     public void userUpdateCheckWithOutAuth() {
         Response response = getUserUpdate(updName, updEmail, null);
-        UserErrorResponseModel responseError = deserialize(response.getBody().asString(), UserErrorResponseModel.class);
+        UserErrorResponseModel responseError = fromJsonString(response.getBody().asString(), UserErrorResponseModel.class);
         checkStatusCode(response,401);
         Assert.assertEquals("You should be authorised", responseError.message);
     }

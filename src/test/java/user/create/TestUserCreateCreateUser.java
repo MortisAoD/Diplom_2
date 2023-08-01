@@ -14,7 +14,7 @@ import io.qameta.allure.junit4.DisplayName;
 import models.response.user.UserResponseModel;
 
 import static functions.Utility.checkStatusCode;
-import static functions.Utility.deserialize;
+import static functions.Utility.fromJsonString;
 
 @RunWith(Parameterized.class)
 public class TestUserCreateCreateUser extends FunctionsUserApi {
@@ -24,7 +24,7 @@ public class TestUserCreateCreateUser extends FunctionsUserApi {
     private final String password;
     private UserResponseModel responseModel;
 
-    private TestUserCreateCreateUser(String name, String email, String password) {
+    public TestUserCreateCreateUser(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -39,7 +39,7 @@ public class TestUserCreateCreateUser extends FunctionsUserApi {
 
     private void getUserCreate() {
         Response response = getUserCreate(name, email, password);
-        responseModel = deserialize(response.getBody().asString(), UserResponseModel.class);
+        responseModel = fromJsonString(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,200);
     }
 

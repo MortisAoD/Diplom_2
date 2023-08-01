@@ -14,7 +14,7 @@ import models.response.user.UserResponseModel;
 import io.qameta.allure.junit4.DisplayName;
 
 import static functions.Utility.checkStatusCode;
-import static functions.Utility.deserialize;
+import static functions.Utility.fromJsonString;
 
 @RunWith(Parameterized.class)
 public class TestUserLoginLoginUser extends FunctionsUserApi {
@@ -26,7 +26,7 @@ public class TestUserLoginLoginUser extends FunctionsUserApi {
     private UserResponseModel responseCreate;
     FunctionsUserApi userCreate = new FunctionsUserApi();
 
-    private TestUserLoginLoginUser(String name, String email, String password) {
+    public TestUserLoginLoginUser(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -42,7 +42,7 @@ public class TestUserLoginLoginUser extends FunctionsUserApi {
     private void getUserLogin(){
         Response response = userCreate.getUserCreate(name, email, password);
         checkStatusCode(response,200);
-        responseCreate = deserialize(response.getBody().asString(), UserResponseModel.class);
+        responseCreate = fromJsonString(response.getBody().asString(), UserResponseModel.class);
     }
 
     @Before
@@ -55,7 +55,7 @@ public class TestUserLoginLoginUser extends FunctionsUserApi {
     @DisplayName("Авторизация пользователя - авторизация пользователя")
     public void userLoginCheckAuth() {
         Response response = getUserLogin(email, password);
-        responseLogin = deserialize(response.getBody().asString(), UserResponseModel.class);
+        responseLogin = fromJsonString(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,200);
         Assert.assertTrue(responseLogin.success);
     }
@@ -64,7 +64,7 @@ public class TestUserLoginLoginUser extends FunctionsUserApi {
     @DisplayName("Авторизация пользователя - авторизация с неверным [email]")
     public void userLoginCheckUnValidEmail() {
         Response response = getUserLogin(email + "/", password);
-        responseLogin = deserialize(response.getBody().asString(), UserResponseModel.class);
+        responseLogin = fromJsonString(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,401);
         Assert.assertFalse(responseLogin.success);
     }
@@ -73,7 +73,7 @@ public class TestUserLoginLoginUser extends FunctionsUserApi {
     @DisplayName("Авторизация пользователя - авторизация с неверным [password]")
     public void userLoginCheckUnValidPassword() {
         Response response = getUserLogin(email, password + "/");
-        responseLogin = deserialize(response.getBody().asString(), UserResponseModel.class);
+        responseLogin = fromJsonString(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,401);
         Assert.assertFalse(responseLogin.success);
     }

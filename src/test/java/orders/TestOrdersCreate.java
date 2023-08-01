@@ -22,11 +22,6 @@ import static functions.user.FunctionsUserApi.getUserDelete;
 @RunWith(Parameterized.class)
 public class TestOrdersCreate extends FunctionsOrdersApi {
 
-    @Before
-    public void domain() {
-        apiEndPoint();
-    }
-
     private final String name;
     private final String email;
     private final String password;
@@ -35,7 +30,7 @@ public class TestOrdersCreate extends FunctionsOrdersApi {
     private UserResponseModel responseUserCreate;
     private OrdersResponseAuthModel responseOrdersAuth;
 
-    private TestOrdersCreate(String name, String email, String password, String ingredientMain, String ingredientSauce) {
+    public TestOrdersCreate(String name, String email, String password, String ingredientMain, String ingredientSauce) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -61,15 +56,20 @@ public class TestOrdersCreate extends FunctionsOrdersApi {
 
     private void getUserCreate() {
         Response response = userCreate.getUserCreate(name, email, password);
-        responseUserCreate = deserialize(response.getBody().asString(), UserResponseModel.class);
+        responseUserCreate = fromJsonString(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,200);
+    }
+
+    @Before
+    public void domain() {
+        apiEndPoint();
     }
 
     @Test
     @DisplayName("Создание заказа - без авторизации")
     public void ordersCreateWithOutAuth() {
         Response response = getOrdersCreate(addIngredient(), null);
-        OrdersResponseModel responseOrdersCreate = deserialize(response.getBody().asString(),OrdersResponseModel.class);
+        OrdersResponseModel responseOrdersCreate = fromJsonString(response.getBody().asString(),OrdersResponseModel.class);
 
         checkStatusCode(response,200);
         Assert.assertEquals("Spicy минеральный бургер", responseOrdersCreate.name);
@@ -80,7 +80,7 @@ public class TestOrdersCreate extends FunctionsOrdersApi {
     public void ordersCreateCheckIngredients() {
         getUserCreate();
         Response response = getOrdersCreate(addIngredient(), responseUserCreate.getAccessToken());
-        responseOrdersAuth = deserialize(response.getBody().asString(),OrdersResponseAuthModel.class);
+        responseOrdersAuth = fromJsonString(response.getBody().asString(),OrdersResponseAuthModel.class);
 
         checkStatusCode(response,200);
         getUserDelete(responseUserCreate.getAccessToken());
@@ -92,7 +92,7 @@ public class TestOrdersCreate extends FunctionsOrdersApi {
     public void ordersCreateCheckOrder() {
         getUserCreate();
         Response response = getOrdersCreate(addIngredient(), responseUserCreate.getAccessToken());
-        responseOrdersAuth = deserialize(response.getBody().asString(), OrdersResponseAuthModel.class);
+        responseOrdersAuth = fromJsonString(response.getBody().asString(), OrdersResponseAuthModel.class);
 
         checkStatusCode(response,200);
         getUserDelete(responseUserCreate.getAccessToken());

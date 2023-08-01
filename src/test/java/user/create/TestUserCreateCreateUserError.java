@@ -13,7 +13,7 @@ import io.qameta.allure.junit4.DisplayName;
 import models.response.user.UserResponseModel;
 
 import static functions.Utility.checkStatusCode;
-import static functions.Utility.deserialize;
+import static functions.Utility.fromJsonString;
 
 @RunWith(Parameterized.class)
 public class TestUserCreateCreateUserError extends FunctionsUserApi {
@@ -23,7 +23,7 @@ public class TestUserCreateCreateUserError extends FunctionsUserApi {
     private final String password;
     private UserResponseModel responseModel;
 
-    private TestUserCreateCreateUserError(String name, String email, String password) {
+    public TestUserCreateCreateUserError(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -45,11 +45,11 @@ public class TestUserCreateCreateUserError extends FunctionsUserApi {
     @DisplayName("Создание пользователя - проверка [дубликата пользователя]")
     public void userCreateCheckDuplicate() {
         Response response = getUserCreate(name, email, password);
-        responseModel = deserialize(response.getBody().asString(), UserResponseModel.class);
+        responseModel = fromJsonString(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,200);
 
         Response responseErr = getUserCreate(name, email, password);
-        UserResponseModel responseError = deserialize(responseErr.getBody().asString(), UserResponseModel.class);
+        UserResponseModel responseError = fromJsonString(responseErr.getBody().asString(), UserResponseModel.class);
         checkStatusCode(responseErr,403);
 
         getUserDelete(responseModel.getAccessToken());
@@ -60,7 +60,7 @@ public class TestUserCreateCreateUserError extends FunctionsUserApi {
     @DisplayName("Создание пользователя - проверка обязательности поля [name]")
     public void userCreateCheckRequiredName() {
         Response response = getUserCreate(null, email, password);
-        responseModel = deserialize(response.getBody().asString(), UserResponseModel.class);
+        responseModel = fromJsonString(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,403);
         Assert.assertFalse(responseModel.success);
     }
@@ -69,7 +69,7 @@ public class TestUserCreateCreateUserError extends FunctionsUserApi {
     @DisplayName("Создание пользователя - проверка обязательности поля [email]")
     public void userCreateCheckRequiredEmail() {
         Response response = getUserCreate(name, null, password);
-        responseModel = deserialize(response.getBody().asString(), UserResponseModel.class);
+        responseModel = fromJsonString(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,403);
         Assert.assertFalse(responseModel.success);
     }
@@ -78,7 +78,7 @@ public class TestUserCreateCreateUserError extends FunctionsUserApi {
     @DisplayName("Создание пользователя - проверка обязательности поля [password]")
     public void userCreateCheckRequiredPassword() {
         Response response = getUserCreate(name, email, null);
-        responseModel = deserialize(response.getBody().asString(), UserResponseModel.class);
+        responseModel = fromJsonString(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,403);
         Assert.assertFalse(responseModel.success);
     }

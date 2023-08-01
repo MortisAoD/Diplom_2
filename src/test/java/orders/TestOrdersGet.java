@@ -17,7 +17,7 @@ import models.response.user.UserResponseModel;
 import functions.orders.FunctionsOrdersApi;
 
 import static functions.Utility.checkStatusCode;
-import static functions.Utility.deserialize;
+import static functions.Utility.fromJsonString;
 import static functions.user.FunctionsUserApi.getUserDelete;
 
 @RunWith(Parameterized.class)
@@ -49,7 +49,7 @@ public class TestOrdersGet extends FunctionsOrdersApi {
 
     public void getCreateUser(){
         Response response = userCreate.getUserCreate(name, email, password);
-        responseCreate = deserialize(response.getBody().asString(), UserResponseModel.class);
+        responseCreate = fromJsonString(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,200);
     }
 
@@ -75,7 +75,7 @@ public class TestOrdersGet extends FunctionsOrdersApi {
     @DisplayName("Получение заказа пользователя - пользователь авторизован, проверка поля[success]")
     public void orderGetSuccess() {
         Response response = getOrders(responseCreate.getAccessToken());
-        responseGet = deserialize(response.getBody().asString(), OrdersGetResponseModel.class);
+        responseGet = fromJsonString(response.getBody().asString(), OrdersGetResponseModel.class);
         checkStatusCode(response,200);
         Assert.assertTrue(responseGet.success);
     }
@@ -84,7 +84,7 @@ public class TestOrdersGet extends FunctionsOrdersApi {
     @DisplayName("Получение заказов конкретного пользователя - авторизованный пользователь, проверка поля[name]")
     public void orderGetName() {
         Response response = getOrders(responseCreate.getAccessToken());
-        responseGet = deserialize(response.getBody().asString(), OrdersGetResponseModel.class);
+        responseGet = fromJsonString(response.getBody().asString(), OrdersGetResponseModel.class);
         checkStatusCode(response,200);
         Assert.assertEquals("Spicy бургер", responseGet.orders.get(0).name);
     }
@@ -93,7 +93,7 @@ public class TestOrdersGet extends FunctionsOrdersApi {
     @DisplayName("Получение заказов конкретного пользователя - авторизованный пользователь, проверка поля[name]")
     public void orderGetStatus() {
         Response response = getOrders(responseCreate.getAccessToken());
-        responseGet = deserialize(response.getBody().asString(), OrdersGetResponseModel.class);
+        responseGet = fromJsonString(response.getBody().asString(), OrdersGetResponseModel.class);
         checkStatusCode(response,200);
         Assert.assertEquals("done", responseGet.orders.get(0).status);
     }
@@ -102,7 +102,7 @@ public class TestOrdersGet extends FunctionsOrdersApi {
     @DisplayName("Получение заказов конкретного пользователя - авторизованный пользователь, проверка поля[name]")
     public void orderGetIngredients() {
         Response response = getOrders(responseCreate.getAccessToken());
-        responseGet = deserialize(response.getBody().asString(), OrdersGetResponseModel.class);
+        responseGet = fromJsonString(response.getBody().asString(), OrdersGetResponseModel.class);
         checkStatusCode(response,200);
         Assert.assertEquals(ingredient, responseGet.orders.get(0).ingredients.get(0));
     }

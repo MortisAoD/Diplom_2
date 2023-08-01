@@ -7,8 +7,7 @@ import io.restassured.response.Response;
 import static io.restassured.RestAssured.given;
 
 public class OrdersApi extends Request {
-    private final static String METHOD_CREATE = "/orders";
-    private final static String METHOD_GET = "/orders";
+    private final static String ORDERS = "/orders";
 
     @Step("request POST | method '/orders' [without token]")
     public Response requestOrdersCreate(Object model) {
@@ -17,7 +16,7 @@ public class OrdersApi extends Request {
                 .and()
                 .body(model)
                 .when()
-                .post(METHOD_CREATE);
+                .post(ORDERS);
     }
 
     @Step("request POST | method '/orders' [with token]")
@@ -28,7 +27,7 @@ public class OrdersApi extends Request {
                 .and()
                 .body(model)
                 .when()
-                .post(METHOD_CREATE);
+                .post(ORDERS);
     }
 
     @Step("request GET | method '/orders' [without token]")
@@ -36,7 +35,7 @@ public class OrdersApi extends Request {
         return given()
                 .header("Content-type", "application/json")
                 .when()
-                .get(METHOD_GET);
+                .get(ORDERS);
     }
 
     @Step("request GET | method '/orders' [with token]")
@@ -45,6 +44,6 @@ public class OrdersApi extends Request {
                 .oauth2(token.replace("Bearer ", ""))
                 .header("Content-type", "application/json")
                 .when()
-                .get(METHOD_GET);
+                .get(ORDERS);
     }
 }

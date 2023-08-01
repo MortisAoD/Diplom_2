@@ -8,27 +8,22 @@ import org.junit.runners.Parameterized;
 import io.restassured.response.Response;
 import org.junit.runners.Parameterized.Parameters;
 
-import functions.user.FunctionsUserCreate;
+import functions.user.FunctionsUserApi;
 import io.qameta.allure.junit4.DisplayName;
 import models.response.user.UserResponseModel;
 
 import static functions.Utility.checkStatusCode;
 import static functions.Utility.deserialize;
-import static functions.user.FunctionsUserDelete.getUserDelete;
 
 @RunWith(Parameterized.class)
-public class TestUserCreateCreateUserError extends FunctionsUserCreate {
-
-    @Before
-    public void domain() {
-        apiEndPoint();
-    }
+public class TestUserCreateCreateUserError extends FunctionsUserApi {
 
     private final String name;
     private final String email;
     private final String password;
+    private UserResponseModel responseModel;
 
-    public TestUserCreateCreateUserError(String name, String email, String password) {
+    private TestUserCreateCreateUserError(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -41,7 +36,10 @@ public class TestUserCreateCreateUserError extends FunctionsUserCreate {
         };
     }
 
-    private UserResponseModel responseModel;
+    @Before
+    public void domain() {
+        apiEndPoint();
+    }
 
     @Test
     @DisplayName("Создание пользователя - проверка [дубликата пользователя]")

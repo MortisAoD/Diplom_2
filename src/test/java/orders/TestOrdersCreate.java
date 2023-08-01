@@ -8,19 +8,19 @@ import org.junit.runners.Parameterized;
 import io.restassured.response.Response;
 
 import java.util.ArrayList;
-import functions.user.FunctionsUserCreate;
+import functions.user.FunctionsUserApi;
 import io.qameta.allure.junit4.DisplayName;
-import functions.orders.FunctionsOrdersCreate;
+import functions.orders.FunctionsOrdersApi;
 import models.response.user.UserResponseModel;
 import org.junit.runners.Parameterized.Parameters;
 import models.response.orders.base.OrdersResponseModel;
 import models.response.orders.auth.OrdersResponseAuthModel;
 
 import static functions.Utility.*;
-import static functions.user.FunctionsUserDelete.getUserDelete;
+import static functions.user.FunctionsUserApi.getUserDelete;
 
 @RunWith(Parameterized.class)
-public class TestOrdersCreate extends FunctionsOrdersCreate {
+public class TestOrdersCreate extends FunctionsOrdersApi {
 
     @Before
     public void domain() {
@@ -32,8 +32,10 @@ public class TestOrdersCreate extends FunctionsOrdersCreate {
     private final String password;
     private final String ingredientMain;
     private final String ingredientSauce;
+    private UserResponseModel responseUserCreate;
+    private OrdersResponseAuthModel responseOrdersAuth;
 
-    public TestOrdersCreate(String name, String email, String password, String ingredientMain, String ingredientSauce) {
+    private TestOrdersCreate(String name, String email, String password, String ingredientMain, String ingredientSauce) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -48,19 +50,16 @@ public class TestOrdersCreate extends FunctionsOrdersCreate {
         };
     }
 
-    private UserResponseModel responseUserCreate;
-    private OrdersResponseAuthModel responseOrdersAuth;
+    FunctionsUserApi userCreate = new FunctionsUserApi();
 
-    FunctionsUserCreate userCreate = new FunctionsUserCreate();
-
-    public ArrayList<String> addIngredient() {
+    private ArrayList<String> addIngredient() {
         ArrayList<String> ingredients = new ArrayList<>();
         ingredients.add(ingredientMain);
         ingredients.add(ingredientSauce);
         return ingredients;
     }
 
-    public void getUserCreate() {
+    private void getUserCreate() {
         Response response = userCreate.getUserCreate(name, email, password);
         responseUserCreate = deserialize(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,200);

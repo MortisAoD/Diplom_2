@@ -9,28 +9,22 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import functions.user.FunctionsUserCreate;
+import functions.user.FunctionsUserApi;
 import io.qameta.allure.junit4.DisplayName;
 import models.response.user.UserResponseModel;
 
 import static functions.Utility.checkStatusCode;
 import static functions.Utility.deserialize;
-import static functions.user.FunctionsUserDelete.getUserDelete;
 
 @RunWith(Parameterized.class)
-public class TestUserCreateCreateUser extends FunctionsUserCreate {
-
-    @Before
-    public void domain() {
-        apiEndPoint();
-        getUserCreate();
-    }
+public class TestUserCreateCreateUser extends FunctionsUserApi {
 
     private final String name;
     private final String email;
     private final String password;
+    private UserResponseModel responseModel;
 
-    public TestUserCreateCreateUser(String name, String email, String password) {
+    private TestUserCreateCreateUser(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -43,12 +37,16 @@ public class TestUserCreateCreateUser extends FunctionsUserCreate {
         };
     }
 
-    private UserResponseModel responseModel;
-
-    public void getUserCreate() {
+    private void getUserCreate() {
         Response response = getUserCreate(name, email, password);
         responseModel = deserialize(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,200);
+    }
+
+    @Before
+    public void domain() {
+        apiEndPoint();
+        getUserCreate();
     }
 
     @Test

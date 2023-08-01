@@ -9,33 +9,27 @@ import org.junit.runners.Parameterized;
 import io.restassured.response.Response;
 import org.junit.runners.Parameterized.Parameters;
 
-import functions.user.FunctionsUserUpdate;
-import functions.user.FunctionsUserCreate;
+import functions.user.FunctionsUserApi;
 import io.qameta.allure.junit4.DisplayName;
 import models.response.user.UserResponseModel;
 import models.response.user.UserErrorResponseModel;
 import models.response.user.UserUpdateResponseModel;
 
 import static functions.Utility.*;
-import static functions.user.FunctionsUserDelete.getUserDelete;
 
 @RunWith(Parameterized.class)
-public class TestUserUpdateUpdateUser extends FunctionsUserUpdate {
-
-    @Before
-    public void domain() {
-        apiEndPoint();
-        getUserCreate();
-    }
+public class TestUserUpdateUpdateUser extends FunctionsUserApi {
 
     private final String name;
     private final String email;
     private final String password;
-
     private final String updName;
     private final String updEmail;
+    private UserResponseModel responseCreate;
+    private UserUpdateResponseModel responseUpdate;
+    FunctionsUserApi userCreate = new FunctionsUserApi();
 
-    public TestUserUpdateUpdateUser(String name, String email, String password, String updName, String updEmail) {
+    private TestUserUpdateUpdateUser(String name, String email, String password, String updName, String updEmail) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -50,15 +44,16 @@ public class TestUserUpdateUpdateUser extends FunctionsUserUpdate {
         };
     }
 
-    private UserResponseModel responseCreate;
-    private UserUpdateResponseModel responseUpdate;
-
-    FunctionsUserCreate userCreate = new FunctionsUserCreate();
-
-    public void getUserCreate(){
+    private void getUserCreate(){
         Response response = userCreate.getUserCreate(name, email, password);
         responseCreate = deserialize(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,200);
+    }
+
+    @Before
+    public void domain() {
+        apiEndPoint();
+        getUserCreate();
     }
 
     @Test

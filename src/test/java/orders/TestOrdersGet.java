@@ -11,30 +11,27 @@ import io.restassured.response.Response;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.ArrayList;
-import functions.user.FunctionsUserCreate;
+import functions.user.FunctionsUserApi;
 import io.qameta.allure.junit4.DisplayName;
-import functions.orders.FunctionsOrdersGet;
 import models.response.user.UserResponseModel;
-import functions.orders.FunctionsOrdersCreate;
+import functions.orders.FunctionsOrdersApi;
 
 import static functions.Utility.checkStatusCode;
 import static functions.Utility.deserialize;
-import static functions.user.FunctionsUserDelete.getUserDelete;
+import static functions.user.FunctionsUserApi.getUserDelete;
 
 @RunWith(Parameterized.class)
-public class TestOrdersGet extends FunctionsOrdersGet {
-
-    @Before
-    public void domain() {
-        apiEndPoint();
-        getCreateUser();
-        getCreateOrder();
-    }
+public class TestOrdersGet extends FunctionsOrdersApi {
 
     private final String name;
     private final String email;
     private final String password;
     private final String ingredient;
+    private UserResponseModel responseCreate;
+    private OrdersGetResponseModel responseGet;
+
+    FunctionsUserApi userCreate = new FunctionsUserApi();
+    FunctionsOrdersApi ordersCreate = new FunctionsOrdersApi();
 
     public TestOrdersGet(String name, String email, String password, String ingredient) {
         this.name = name;
@@ -50,27 +47,28 @@ public class TestOrdersGet extends FunctionsOrdersGet {
         };
     }
 
-    private UserResponseModel responseCreate;
-    private OrdersGetResponseModel responseGet;
-
-    FunctionsUserCreate userCreate = new FunctionsUserCreate();
-    FunctionsOrdersCreate ordersCreate = new FunctionsOrdersCreate();
-
     public void getCreateUser(){
         Response response = userCreate.getUserCreate(name, email, password);
         responseCreate = deserialize(response.getBody().asString(), UserResponseModel.class);
         checkStatusCode(response,200);
     }
 
-    public void getCreateOrder(){
+    private void getCreateOrder(){
         Response response = ordersCreate.getOrdersCreate(ingredients(), responseCreate.getAccessToken());
         checkStatusCode(response,200);
     }
 
-    public ArrayList<String> ingredients(){
+    private ArrayList<String> ingredients(){
         ArrayList<String> addiIngredient = new ArrayList<>();
         addiIngredient.add(ingredient);
         return addiIngredient;
+    }
+
+    @Before
+    public void domain() {
+        apiEndPoint();
+        getCreateUser();
+        getCreateOrder();
     }
 
     @Test

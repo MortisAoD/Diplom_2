@@ -9,29 +9,24 @@ import org.junit.runners.Parameterized;
 import io.restassured.response.Response;
 import org.junit.runners.Parameterized.Parameters;
 
-import functions.user.FunctionsUserLogin;
-import functions.user.FunctionsUserCreate;
+import functions.user.FunctionsUserApi;
 import models.response.user.UserResponseModel;
 import io.qameta.allure.junit4.DisplayName;
 
 import static functions.Utility.checkStatusCode;
 import static functions.Utility.deserialize;
-import static functions.user.FunctionsUserDelete.getUserDelete;
 
 @RunWith(Parameterized.class)
-public class TestUserLoginLoginUser extends FunctionsUserLogin {
-
-    @Before
-    public void domain() {
-        apiEndPoint();
-        getUserLogin();
-    }
+public class TestUserLoginLoginUser extends FunctionsUserApi {
 
     private final String name;
     private final String email;
     private final String password;
+    private UserResponseModel responseLogin;
+    private UserResponseModel responseCreate;
+    FunctionsUserApi userCreate = new FunctionsUserApi();
 
-    public TestUserLoginLoginUser(String name, String email, String password) {
+    private TestUserLoginLoginUser(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -44,14 +39,16 @@ public class TestUserLoginLoginUser extends FunctionsUserLogin {
         };
     }
 
-    private UserResponseModel responseLogin;
-    private UserResponseModel responseCreate;
-    FunctionsUserCreate userCreate = new FunctionsUserCreate();
-
-    public void getUserLogin(){
+    private void getUserLogin(){
         Response response = userCreate.getUserCreate(name, email, password);
         checkStatusCode(response,200);
         responseCreate = deserialize(response.getBody().asString(), UserResponseModel.class);
+    }
+
+    @Before
+    public void domain() {
+        apiEndPoint();
+        getUserLogin();
     }
 
     @Test
